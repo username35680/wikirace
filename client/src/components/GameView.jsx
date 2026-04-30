@@ -135,6 +135,48 @@ const GameView = ({ startPage, endPage, roomCode, username, players, round, tota
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      
+      {/* Bandeau victoire personnelle */}
+      {hasWon && (
+        <div style={{
+          background: 'linear-gradient(135deg, #7c5cfc, #a78bfa)',
+          padding: '1rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+        }}>
+          <span style={{ fontSize: '1.5rem' }}>🏆</span>
+          <div>
+            <div style={{ color: 'white', fontWeight: 700, fontSize: '1rem' }}>
+              Tu as atteint la page d'arrivée !
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem' }}>
+              En {clicks} clic{clicks > 1 ? 's' : ''} — en attente des autres joueurs...
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bandeau timer pour les autres */}
+      {!hasWon && timerLeft !== null && (
+        <div style={{
+          background: timerLeft <= 5 ? '#7f1d1d' : '#1e1b3a',
+          borderBottom: `1px solid ${timerLeft <= 5 ? '#ef4444' : 'var(--border)'}`,
+          padding: '0.75rem 1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          transition: 'background 0.3s',
+        }}>
+          <span style={{ fontSize: '1.2rem' }}>⏱</span>
+          <span style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--text-h)', fontWeight: 600 }}>
+            {firstWinner} a trouvé ! Il te reste {timerLeft} seconde{timerLeft > 1 ? 's' : ''}
+          </span>
+        </div>
+      )}
+
       {/* Header HUD */}
       <div style={{
         position: 'sticky',
@@ -142,82 +184,46 @@ const GameView = ({ startPage, endPage, roomCode, username, players, round, tota
         zIndex: 100,
         background: 'var(--bg-card)',
         borderBottom: '1px solid var(--border)',
-        padding: '0.75rem 1.5rem',
+        padding: '0.75rem 2rem',
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'space-between',
         gap: '1rem',
         flexWrap: 'wrap',
       }}>
-        {/* Bandeau victoire personnelle */}
-        {hasWon && (
-        <div style={{
-            background: 'linear-gradient(135deg, #7c5cfc, #a78bfa)',
-            padding: '1rem 1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-        }}>
-            <span style={{ fontSize: '1.5rem' }}>🏆</span>
-            <div>
-            <div style={{ color: 'white', fontWeight: 700, fontSize: '1rem' }}>
-                Tu as atteint la page d'arrivée !
-            </div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem' }}>
-                En {clicks} clic{clicks > 1 ? 's' : ''} — en attente des autres joueurs...
-            </div>
-            </div>
-        </div>
-        )}
-
-        {/* Bandeau timer pour les autres */}
-        {!hasWon && timerLeft !== null && (
-        <div style={{
-            background: timerLeft <= 5 ? '#7f1d1d' : '#1e1b3a',
-            borderBottom: `1px solid ${timerLeft <= 5 ? '#ef4444' : 'var(--border)'}`,
-            padding: '0.6rem 1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            transition: 'background 0.3s',
-        }}>
-            <span style={{ fontSize: '1.2rem' }}>⏱</span>
-            <span style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--text-h)', fontWeight: 600 }}>
-            {firstWinner} a trouvé ! Il te reste {timerLeft} seconde{timerLeft > 1 ? 's' : ''}
-            </span>
-        </div>
-        )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+        {/* Départ → Arrivée */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '1px' }}>Départ</span>
           <span style={{ color: 'var(--text-h)', fontWeight: 500 }}>{startPage}</span>
-          <span style={{ color: 'var(--border)' }}>→</span>
+          <span style={{ color: 'var(--accent)', margin: '0 4px' }}>→</span>
           <span style={{ fontSize: '0.75rem', color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '1px' }}>Arrivée</span>
-          <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{endPage}</span>
+          <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{endPage}</span>
         </div>
 
+        {/* Scores joueurs */}
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           {players.map(p => (
-            <div key={p.id} style={{ fontSize: '0.85rem', color: 'var(--text)' }}>
-              {p.username} <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{p.id === socket.id ? clicks : p.clicks}</span>
+            <div key={p.id} style={{ fontSize: '0.85rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>{p.username}</span>
+              <span style={{
+                color: 'white',
+                background: p.id === socket.id ? 'var(--accent)' : 'var(--bg-input)',
+                border: '1px solid var(--border)',
+                padding: '2px 10px',
+                borderRadius: '20px',
+                fontWeight: 700,
+                fontSize: '0.8rem',
+              }}>
+                {p.id === socket.id ? clicks : p.clicks}
+              </span>
             </div>
           ))}
-          <div style={{
-            background: 'var(--accent)',
-            color: 'white',
-            padding: '4px 12px',
-            borderRadius: '20px',
-            fontSize: '0.85rem',
-            fontWeight: 600,
-          }}>
-            {clicks} clic{clicks > 1 ? 's' : ''}
-          </div>
         </div>
       </div>
 
       {/* Fil d'Ariane */}
       <div style={{
-        padding: '0.5rem 1.5rem',
+        padding: '0.5rem 2rem',
         background: 'var(--bg)',
         borderBottom: '1px solid var(--border)',
         fontSize: '0.8rem',
@@ -230,7 +236,7 @@ const GameView = ({ startPage, endPage, roomCode, username, players, round, tota
         {path.map((p, i) => (
           <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             {i > 0 && <span style={{ color: 'var(--border)' }}>›</span>}
-            <span style={{ color: i === path.length - 1 ? 'var(--text-h)' : 'var(--text)' }}>
+            <span style={{ color: i === path.length - 1 ? 'var(--accent)' : 'var(--text)' }}>
               {decodeURIComponent(p).replace(/_/g, ' ')}
             </span>
           </span>
@@ -238,18 +244,19 @@ const GameView = ({ startPage, endPage, roomCode, username, players, round, tota
       </div>
 
       {/* Contenu Wikipedia */}
-      <div style={{ flex: 1, padding: '2rem', maxWidth: '860px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ flex: 1, padding: '2.5rem 2rem', maxWidth: '900px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text)' }}>
             Chargement...
           </div>
         ) : (
           <>
-            <h1 style={{ 
-              fontSize: '2rem', 
+            <h1 style={{
+              fontSize: '2.2rem',
               marginBottom: '1.5rem',
               paddingBottom: '1rem',
               borderBottom: '1px solid var(--border)',
+              color: 'var(--text-h)',
             }}>
               {title}
             </h1>

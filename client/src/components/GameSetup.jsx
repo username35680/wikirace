@@ -3,10 +3,14 @@ import { useState, useEffect, useRef } from 'react';
 const WikiSearch = ({ label, onSelect }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
-  const [selected, setSelected] = useState(null);
   const debounceRef = useRef(null);
+  const justSelectedRef = useRef(false);
 
   useEffect(() => {
+    if (justSelectedRef.current) {
+      justSelectedRef.current = false;
+      return;
+    }
     if (query.length < 2) { setResults([]); return; }
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
@@ -18,7 +22,7 @@ const WikiSearch = ({ label, onSelect }) => {
   }, [query]);
 
   const handleSelect = (title) => {
-    setSelected(title);
+    justSelectedRef.current = true; // ← marque la sélection
     setQuery(title);
     setResults([]);
     onSelect(title);
