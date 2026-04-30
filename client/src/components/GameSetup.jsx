@@ -79,7 +79,7 @@ const WikiSearch = ({ label, onSelect }) => {
   );
 };
 
-const GameSetup = ({ onStart, onChange, isHost, config }) => {
+const GameSetup = ({ onStart, onChange, isHost, config, timer, onTimerChange }) => {
   const [startPage, setStartPage] = useState(null);
   const [endPage, setEndPage] = useState(null);
 
@@ -110,11 +110,27 @@ const GameSetup = ({ onStart, onChange, isHost, config }) => {
     );
   }
 
-  return (
+    return (
     <div className="card" style={{ maxWidth: '420px', width: '100%' }}>
       <h3>Configurer la partie</h3>
       <WikiSearch label="Page de départ" onSelect={handleStartSelect} />
       <WikiSearch label="Page d'arrivée" onSelect={handleEndSelect} />
+      
+      <div style={{ marginTop: '0.5rem' }}>
+        <label style={{
+          display: 'block', fontSize: '0.75rem', color: 'var(--text)',
+          textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px'
+        }}>
+          ⏱ Timer après le 1er arrivé (secondes)
+        </label>
+        <input
+          type="number"
+          min="5" max="60"
+          value={timer}
+          onChange={(e) => onTimerChange(Number(e.target.value))}
+        />
+      </div>
+
       {startPage && endPage && startPage === endPage && (
         <p style={{ color: '#ff6b6b', fontSize: '0.85rem' }}>
           Les deux pages doivent être différentes

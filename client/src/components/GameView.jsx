@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import socket from '../socket';
 
-const GameView = ({ startPage, endPage, roomCode, username, players }) => {
+const GameView = ({ startPage, endPage, roomCode, username, players, round, totalRounds, mode, timerDuration }) => {
   const [currentPage, setCurrentPage] = useState(startPage);
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
@@ -9,7 +9,11 @@ const GameView = ({ startPage, endPage, roomCode, username, players }) => {
   const [loading, setLoading] = useState(false);
   const [path, setPath] = useState([startPage]);
   const [winner, setWinner] = useState(null);
+  const [timerLeft, setTimerLeft] = useState(null);
   const contentRef = useRef(null);
+  const [hasWon, setHasWon] = useState(false);
+  const [firstWinner, setFirstWinner] = useState(null);
+  const timerRef = useRef(null);
 
     const normalise = (str) => 
     decodeURIComponent(str)
@@ -29,9 +33,8 @@ const GameView = ({ startPage, endPage, roomCode, username, players }) => {
 
         console.log("Page actuelle:", normalise(data.title), "| Cible:", normalise(endPage)); // ← log temporaire
 
-        if (normalise(data.title) === normalise(endPage) || 
-            normalise(page) === normalise(endPage)) {
-        console.log("ARRIVÉE DÉTECTÉE !"); // ← log temporaire
+        if (normalise(data.title) === normalise(endPage) || normalise(page) === normalise(endPage)) {
+            setHasWon(true);
         socket.emit('player_won', { code: roomCode, username, clicks });
         }
     } catch (e) {
@@ -48,7 +51,22 @@ const GameView = ({ startPage, endPage, roomCode, username, players }) => {
       setWinner(data);
     });
 
-    return () => socket.off('game_over');
+    socket.on('round_timer_start', ({ seconds, firstWinner }) => {
+    setFirstWinner(firstWinner);
+    setTimerLeft(seconds);
+    timerRef.current = setInterval(() => {
+        setTimerLeft(prev => {
+        if (prev <= 1) { clearInterval(timerRef.current); return 0; }
+        return prev - 1;
+        });
+    }, 1000);
+    });
+
+    return () => {
+        socket.off('game_over');
+        socket.off('round_timer_start');
+        clearInterval(timerRef.current);
+    };
   }, []);
 
   // Intercepte les clics sur les liens Wikipedia
@@ -131,6 +149,46 @@ const GameView = ({ startPage, endPage, roomCode, username, players }) => {
         gap: '1rem',
         flexWrap: 'wrap',
       }}>
+        {/* Bandeau victoire personnelle */}
+        {hasWon && (
+        <div style={{
+            background: 'linear-gradient(135deg, #7c5cfc, #a78bfa)',
+            padding: '1rem 1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+        }}>
+            <span style={{ fontSize: '1.5rem' }}>🏆</span>
+            <div>
+            <div style={{ color: 'white', fontWeight: 700, fontSize: '1rem' }}>
+                Tu as atteint la page d'arrivée !
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.85rem' }}>
+                En {clicks} clic{clicks > 1 ? 's' : ''} — en attente des autres joueurs...
+            </div>
+            </div>
+        </div>
+        )}
+
+        {/* Bandeau timer pour les autres */}
+        {!hasWon && timerLeft !== null && (
+        <div style={{
+            background: timerLeft <= 5 ? '#7f1d1d' : '#1e1b3a',
+            borderBottom: `1px solid ${timerLeft <= 5 ? '#ef4444' : 'var(--border)'}`,
+            padding: '0.6rem 1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            transition: 'background 0.3s',
+        }}>
+            <span style={{ fontSize: '1.2rem' }}>⏱</span>
+            <span style={{ color: timerLeft <= 5 ? '#ef4444' : 'var(--text-h)', fontWeight: 600 }}>
+            {firstWinner} a trouvé ! Il te reste {timerLeft} seconde{timerLeft > 1 ? 's' : ''}
+            </span>
+        </div>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '1px' }}>Départ</span>
           <span style={{ color: 'var(--text-h)', fontWeight: 500 }}>{startPage}</span>

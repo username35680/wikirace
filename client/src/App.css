@@ -136,28 +136,107 @@ button:active {
   border-radius: 50%;
   flex-shrink: 0;
 }
+
+/* 1. CONTENEUR PRINCIPAL (L'article) */
 .wiki-content {
-  color: var(--text);
-  line-height: 1.7;
-  font-size: 0.95rem;
+    text-align: left;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    color: #202122;       /* Noir Wikipédia (même en dark mode pour l'article) */
+    background: #fff;     /* Fond blanc pour le corps de l'article comme sur ton image */
+    padding: 2rem;
+    border-radius: 8px;
+    font-family: sans-serif;
 }
 
+/* 2. TITRE DE LA PAGE */
+.wiki-content-title {
+    font-family: 'Linux Libertine', 'Georgia', serif;
+    font-size: 2.5rem;
+    color: #000;
+    border-bottom: 1px solid #a2a9b1;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.2rem;
+    font-weight: normal;
+}
+
+/* 3. L'INFOBOX (Le cadre à droite) */
+.wiki-content .infobox, 
+.wiki-content .infobox_v2,
+.wiki-content .infobox_v3,
+.wiki-content table.vertical-navbox {
+    float: right;
+    clear: right;
+    width: 300px;
+    margin: 0 0 1em 1.5em;
+    background-color: #f8f9fa;
+    border: 1px solid #a2a9b1;
+    padding: 0.4em;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.wiki-content p {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+/* Style interne de l'infobox */
+.wiki-content .infobox th {
+    background-color: #eaecf0;
+    text-align: left;
+    padding: 0.2em 0.4em;
+}
+
+.wiki-content .infobox td {
+    padding: 0.2em 0.4em;
+}
+
+/* 4. LES LIENS (Ton style violet/bleu) */
 .wiki-content [data-wiki] {
-  color: var(--accent);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+    color: #36c;          /* Bleu Wikipédia */
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .wiki-content [data-wiki]:hover {
-  color: var(--accent-hover);
+    text-decoration: underline;
 }
 
-.wiki-content p { margin: 0 0 1rem; }
-.wiki-content h2 { font-size: 1.4rem; margin: 2rem 0 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
-.wiki-content h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
-.wiki-content table { border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; max-width: 100%; }
-.wiki-content td, .wiki-content th { border: 1px solid var(--border); padding: 6px 10px; }
-.wiki-content th { background: var(--bg-card); color: var(--text-h); }
-.wiki-content img { max-width: 100%; height: auto; border-radius: 4px; }
-.wiki-content .thumb { float: right; margin: 0 0 1rem 1.5rem; max-width: 300px; }
+/* 5. LES IMAGES ET THUMBNAILS */
+.wiki-content .thumb {
+    margin-bottom: 0.5em;
+    width: auto;
+    background-color: transparent;
+}
+
+.wiki-content .thumbinner {
+    border: 1px solid #a2a9b1;
+    padding: 3px;
+    background-color: #f8f9fa;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.wiki-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 6. NETTOYAGE DES LISTES */
+.wiki-content ul {
+    margin: 0.3em 0 0 1.6em;
+    list-style-type: disc;
+}
+
+.wiki-content li {
+    margin-bottom: 0.1em;
+    display: list-item;   /* Force l'affichage en liste */
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.wiki-content li::before {
+    display: none;       /* Supprime la puce custom du lobby */
+}
