@@ -24,14 +24,13 @@ const GameView = ({ startPage, endPage, roomCode, username, players, round, tota
     const loadPage = async (page) => {
     setLoading(true);
     try {
-        const res = await fetch(`http://localhost:3001/wiki?page=${encodeURIComponent(page)}`);
+        const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
+        const res = await fetch(`${SERVER_URL}/wiki?page=${encodeURIComponent(page)}`);
         const data = await res.json();
         setContent(data.content);
         setTitle(data.title);
         setCurrentPage(page);
         window.scrollTo(0, 0);
-
-        console.log("Page actuelle:", normalise(data.title), "| Cible:", normalise(endPage)); // ← log temporaire
 
         if (normalise(data.title) === normalise(endPage) || normalise(page) === normalise(endPage)) {
             setHasWon(true);

@@ -4,7 +4,7 @@ import socket from './socket';
 import GameSetup from './components/GameSetup';
 import GameView from './components/GameView';
 import RoundOver from './components/RoundOver';
-import './app.css';
+import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);

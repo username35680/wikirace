@@ -27,8 +27,14 @@ app.get('/wiki', async (req, res) => {
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "http://localhost:5173", methods: ["GET", "POST"] }
+  cors: {
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    methods: ["GET", "POST"]
+  }
 });
+
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => console.log(`Serveur prêt sur le port ${PORT}`));
 
 const rooms = {};
 
