@@ -245,5 +245,3 @@ io.on('connection', (socket) => {
     }
   });
 });
-
-server.listen(3001, () => console.log('Serveur prêt sur http://localhost:3001'));
